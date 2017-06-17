@@ -5,6 +5,7 @@ import (
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -76,5 +77,48 @@ func writeJSON(w http.ResponseWriter, data interface{}) {
 
 	if err := json.NewEncoder(w).Encode(data); err != nil {
 		panic(err)
+	}
+}
+
+// Gets an integer parameter from the URL
+func getIntParam(r *http.Request, paramName string) int {
+	vars := mux.Vars(r)
+	if v, ok := vars[paramName]; ok {
+		if i, err := strconv.Atoi(v); err != nil {
+			log.Printf("param %v with value %v is not an integer", paramName, v)
+			return 1
+		} else {
+			return i
+		}
+	} else {
+		log.Printf("param %v does not exist\n", paramName)
+		return 1
+	}
+}
+
+// Gets an unsigned 64-bit integer parameter from the URL
+func getUint64Param(r *http.Request, paramName string) uint64 {
+	vars := mux.Vars(r)
+	if v, ok := vars[paramName]; ok {
+		if i, err := strconv.ParseUint(v, 10, 64); err != nil {
+			log.Printf("param %v with value %v is not an integer", paramName, v)
+			return 1
+		} else {
+			return i
+		}
+	} else {
+		log.Printf("param %v does not exist\n", paramName)
+		return 1
+	}
+}
+
+// Gets a string parameter from the URL
+func getStrParam(r *http.Request, paramName string) string {
+	vars := mux.Vars(r)
+	if v, ok := vars[paramName]; ok {
+		return v
+	} else {
+		log.Printf("param %v does not exist\n", paramName)
+		return ""
 	}
 }

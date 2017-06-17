@@ -23,6 +23,8 @@ func RegisterService(service *Service) {
 	} else {
 		for _, v := range list {
 			if v.Url == service.Url {
+				// Ignores request when duplicate found
+				// TODO: Fail the request instead
 				return
 			}
 		}

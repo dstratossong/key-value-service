@@ -40,8 +40,18 @@ var Routes = []Route{
 	},
 	Route{
 		Method:  GET,
-		Pattern: "/fetch/{id}/{key}",
+		Pattern: "/fetch/{id}",
 		Handler: func(w http.ResponseWriter, r *http.Request) {
+			writeJSON(w, model.GetPropertyForRun(getUint64Param(r, "id")))
+		},
+	},
+	Route{
+		Method:  POST,
+		Pattern: "/create/{service}",
+		Handler: func(w http.ResponseWriter, r *http.Request) {
+			props := new(model.Properties)
+			readJSON(r, props)
+			model.NewServiceRun(getStrParam(r, "service"), props)
 		},
 	},
 }
