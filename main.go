@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/dstratossong/key-value-service/model"
 	"log"
 	"net/http"
 	"time"
@@ -22,16 +23,30 @@ type Route struct {
 
 var Routes = []Route{
 	Route{
-		Method:  POST,
-		Pattern: "/fetch",
+		Method:  GET,
+		Pattern: "/services",
 		Handler: func(w http.ResponseWriter, r *http.Request) {
-			writeJSON(w, "Hello world!")
+			writeJSON(w, model.GetServices())
+		},
+	},
+	Route{
+		Method:  POST,
+		Pattern: "/services/register",
+		Handler: func(w http.ResponseWriter, r *http.Request) {
+			service := new(model.Service)
+			readJSON(r, service)
+			model.RegisterService(service)
+		},
+	},
+	Route{
+		Method:  GET,
+		Pattern: "/fetch/{id}/{key}",
+		Handler: func(w http.ResponseWriter, r *http.Request) {
 		},
 	},
 }
 
 func main() {
-
 	server := &http.Server{
 		Handler:      MakeRouter(),
 		Addr:         ":8080",
