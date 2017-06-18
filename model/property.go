@@ -13,6 +13,7 @@ var runCursor uint64 = 0
 func NewServiceRun(service string, props *Properties) {
 	id := atomic.AddUint64(&runCursor, 1)
 	PropertyStore[id] = props
+	Enqueue(service, id)
 }
 
 func GetPropertyForRun(id uint64) Properties {
