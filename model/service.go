@@ -6,6 +6,7 @@ type Service struct {
 	Name       string
 	Url        string
 	Version    string
+	Status     string
 	Properties []string
 }
 
@@ -17,6 +18,10 @@ func GetServices() map[string][]*Service {
 
 // Warning: No locking!
 func RegisterService(service *Service) {
+	// TODO: For now, makes status forever "Ready"
+	// Because it's late at night and we lazy AF
+	service.Status = "Ready"
+
 	list, found := Services[service.Name]
 	if !found {
 		Services[service.Name] = make([]*Service, 0)

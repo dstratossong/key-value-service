@@ -9,6 +9,26 @@ import (
 	"time"
 )
 
+const (
+	GET     = http.MethodGet
+	POST    = http.MethodPost
+	OPTIONS = http.MethodOptions
+)
+
+type Endpoint struct {
+	Method  string
+	Pattern string
+	Handler http.HandlerFunc
+}
+
+func MakeRouter(endpoints []Endpoint) *mux.Router {
+	router := mux.NewRouter().StrictSlash(true)
+	for _, endpoint := range endpoints {
+		router.Methods(endpoint.Method, OPTIONS).Path(endpoint.Pattern).Handler(Logger(HandleOptions(endpoint.Handler)))
+	}
+	return router
+}
+
 // Writes CORS headers to the response
 func writeCORSHeader(w http.ResponseWriter, r *http.Request) {
 	origin := r.Header.Get("Origin")
@@ -48,15 +68,6 @@ func HandleOptions(h http.Handler) http.HandlerFunc {
 			h.ServeHTTP(w, r)
 		}
 	}
-}
-
-// Returns a fully configured router based on Routes
-func MakeRouter() *mux.Router {
-	router := mux.NewRouter().StrictSlash(true)
-	for _, route := range Routes {
-		router.Methods(route.Method, OPTIONS).Path(route.Pattern).Handler(Logger(HandleOptions(route.Handler)))
-	}
-	return router
 }
 
 // Reads JSON from a HTTP Request and marshal it into an obj

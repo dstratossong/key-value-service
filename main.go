@@ -7,29 +7,22 @@ import (
 	"time"
 )
 
-const (
-	GET     = http.MethodGet
-	POST    = http.MethodPost
-	PATCH   = http.MethodPatch
-	DELETE  = http.MethodDelete
-	OPTIONS = http.MethodOptions
-)
-
-type Route struct {
-	Method  string
-	Pattern string
-	Handler http.HandlerFunc
-}
-
-var Routes = []Route{
-	Route{
+var Endpoints = []Endpoint{
+	Endpoint{
+		Method:  GET,
+		Pattern: "/status",
+		Handler: func(w http.ResponseWriter, r *http.Request) {
+			writeJSON(w, "Available")
+		},
+	},
+	Endpoint{
 		Method:  GET,
 		Pattern: "/services",
 		Handler: func(w http.ResponseWriter, r *http.Request) {
 			writeJSON(w, model.GetServices())
 		},
 	},
-	Route{
+	Endpoint{
 		Method:  POST,
 		Pattern: "/services/register",
 		Handler: func(w http.ResponseWriter, r *http.Request) {
@@ -38,16 +31,16 @@ var Routes = []Route{
 			model.RegisterService(service)
 		},
 	},
-	Route{
+	Endpoint{
 		Method:  GET,
-		Pattern: "/fetch/{id}",
+		Pattern: "/run/fetch/{id}",
 		Handler: func(w http.ResponseWriter, r *http.Request) {
 			writeJSON(w, model.GetPropertyForRun(getUint64Param(r, "id")))
 		},
 	},
-	Route{
+	Endpoint{
 		Method:  POST,
-		Pattern: "/create/{service}",
+		Pattern: "/run/create/{service}",
 		Handler: func(w http.ResponseWriter, r *http.Request) {
 			props := new(model.Properties)
 			readJSON(r, props)
@@ -58,7 +51,7 @@ var Routes = []Route{
 
 func main() {
 	server := &http.Server{
-		Handler:      MakeRouter(),
+		Handler:      MakeRouter(Endpoints),
 		Addr:         ":8080",
 		WriteTimeout: 300 * time.Second,
 		ReadTimeout:  15 * time.Second,

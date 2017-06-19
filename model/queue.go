@@ -23,3 +23,7 @@ func Enqueue(service string, id uint64) {
 
 	resp.Body.Close()
 }
+
+func Dequeue() {
+
+}
