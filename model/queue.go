@@ -6,13 +6,8 @@ import (
 	"net/http"
 )
 
-func Enqueue(service string, id uint64) {
-	services, found := Services[service]
-	if !found {
-		panic("service not found")
-	}
-
-	url := services[0].Url
+func Enqueue(service *Service, id uint64) {
+	url := service.Url
 
 	jsonValue, _ := json.Marshal(struct{ Id uint64 }{id})
 

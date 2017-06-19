@@ -40,11 +40,21 @@ var Endpoints = []Endpoint{
 	},
 	Endpoint{
 		Method:  POST,
-		Pattern: "/run/create/{service}",
+		Pattern: "/run/create",
 		Handler: func(w http.ResponseWriter, r *http.Request) {
-			props := new(model.Properties)
-			readJSON(r, props)
-			model.NewServiceRun(getStrParam(r, "service"), props)
+			obj := new(struct {
+				Service    string
+				Properties *model.Properties
+			})
+			readJSON(r, obj)
+			writeJSON(w, model.NewServiceRun(obj.Service, obj.Properties))
+		},
+	},
+	Endpoint{
+		Method:  GET,
+		Pattern: "/run/{id}",
+		Handler: func(w http.ResponseWriter, r *http.Request) {
+			writeJSON(w, model.GetRun(getUint64Param(r, "id")))
 		},
 	},
 }
