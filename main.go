@@ -39,6 +39,13 @@ var Endpoints = []Endpoint{
 		},
 	},
 	Endpoint{
+		Method:  GET,
+		Pattern: "/run/{id}",
+		Handler: func(w http.ResponseWriter, r *http.Request) {
+			writeJSON(w, model.GetRun(getUint64Param(r, "id")))
+		},
+	},
+	Endpoint{
 		Method:  POST,
 		Pattern: "/run/create",
 		Handler: func(w http.ResponseWriter, r *http.Request) {
@@ -51,10 +58,16 @@ var Endpoints = []Endpoint{
 		},
 	},
 	Endpoint{
-		Method:  GET,
-		Pattern: "/run/{id}",
+		Method:  POST,
+		Pattern: "/run/finish/{id}",
 		Handler: func(w http.ResponseWriter, r *http.Request) {
-			writeJSON(w, model.GetRun(getUint64Param(r, "id")))
+			id := getUint64Param(r, "id")
+			obj := new(struct {
+				Status string
+				Data   *model.Properties
+			})
+			readJSON(r, obj)
+			model.FinishRun(id, obj.Status, obj.Data)
 		},
 	},
 }
